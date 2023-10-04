@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: srealitydb
+      POSTGRES_USER: mizumaky
+      POSTGRES_PASSWORD: secret
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 5
+    # ports:
+    #   - "5432:5432"
+
+  scraper:
+    build: ./sscraper
+    command: scrapy crawl sreality
+    volumes:
+      - ./sscraper:/usr/src/sreality_scraper/sscraper
+      - ./webserver:/usr/src/sreality_scraper/webserver
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: ./webserver
+    volumes:
+      - ./webserver:/usr/src/sreality_scraper/webserver
+    ports:
+      - "8080:8080"
+    depends_on:
+      - scraper
