@@ -39,8 +39,8 @@ class SscraperPipeline:
                 image_url TEXT
             )
         """)
-        print("clearing table")
-        self.dbCursor.execute("DELETE FROM ads *")
+        # print("clearing table")
+        # self.dbCursor.execute("DELETE FROM ads *")
 
     def close_spider(self, spider):
         print("fetching data from database")
